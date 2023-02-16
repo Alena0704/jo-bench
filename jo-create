@@ -1,0 +1,52 @@
+INSTDIR=/home/alena/postgrespro20/tmp_install/bin
+QUERY_DIR=/home/alena/Yandex.Disk/aqo/test/jo-bench
+QUERY_DIR_TEST=/home/alena/Yandex.Disk/aqo/test/jo-bench/queries
+
+# Set PG environment variables for correct access to the DBMS
+ export PGDATA=/home/alena/postgres_data_job
+ export PGPORT=5432
+ export PGUSER=`whoami`
+
+rm -rf $PGDATA
+mkdir $PGDATA
+#define environment
+export LD_LIBRARY_PATH=$INSTDIR/lib:$LD_LIBRARY_PATH
+
+# Stop instances and clean logs.
+$INSTDIR/pg_ctl -D $PGDATA stop
+$INSTDIR/initdb -D $PGDATA
+sleep 1
+rm -rf logfile.log
+
+# Kill all processes
+unamestr=`uname`
+if [[ "$unamestr" == 'Linux' ]]; then
+    pkill -U `whoami` -9 -e postgres
+	pkill -U `whoami` -9 -e pgbench
+	pkill -U `whoami` -9 -e psql
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    killall -u `whoami` -vz -9 postgres
+    killall -u `whoami` -vz -9 pgbench
+    killall -u `whoami` -vz -9 psql
+else
+    echo "Unintended OS."
+fi
+sleep 1
+
+$INSTDIR/pg_ctl -w -D $PGDATA -l logfile.log start
+rm $PGDATA/postgresql.conf
+cp postgresql.conf $PGDATA/postgresql.conf
+$INSTDIR/pg_ctl -D $PGDATA -l logfile restart
+
+$INSTDIR/psql postgres -c "create database alena"
+
+$INSTDIR/psql -f $QUERY_DIR/schema.sql
+$INSTDIR/psql -f $QUERY_DIR/fkindexes.sql
+$INSTDIR/psql -vdatadir="'${QUERY_DIR}'" -f $QUERY_DIR/copy.sql
+
+# Set parameters
+# NB! Consider to use fsync = 'off'
+#psql -c "ALTER SYSTEM SET max_parallel_workers_per_gather = 0" # Just stabilize results
+
+$INSTDIR/pg_ctl -w -D $PGDATA -l logfile.log restart
+$INSTDIR/psql -c "VACUUM ANALYZE" # Be firmly confident about a table statistics

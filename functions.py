@@ -38,11 +38,14 @@ def preprocess(df, column_name, cut=1):
     df = df.drop('{}'.format(column_name),axis = 1)
     return df
 
-def sum_errors(df, column):
+def sum_errors(df, column, mode):
     lst = []
     for k,i in enumerate(df.itertuples(index=False)):
         a = np.array(df[column].loc[k])
-        lst.append(a.sum())
+        if mode=='with':
+            lst.append(a.sum()/i.executions_with_aqo)
+        else:
+            lst.append(a.sum()/i.executions_without_aqo)
     df[column] = lst
     return df
 
@@ -76,7 +79,7 @@ def get_df(path_folder, file_name, mode, times):
         df = pd.concat(dfs, ignore_index=True)
     else:
         df = pd.read_csv('{}/{}'.format(path_folder,file_name))
-        
+
     df = df.fillna(0)
     df=df.rename(columns={'+':'plus', 'Plan time': 'plan_time'})
     df = df.rename(columns = {'Query Number':'query_number', 'Query Name':'query_name', 'Execution Time':'execution_time', 'Query hash':'query_hash'})

@@ -1,0 +1,23 @@
+INSTDIR=/home/alena/postgrespro20/tmp_install/bin
+echo "shared_buffers = 5GB" >> $PGDATA/postgresql.conf
+echo "work_mem = 128MB" >> $PGDATA/postgresql.conf
+echo "wal_buffers = 16MB" >> $PGDATA/postgresql.conf
+echo "max_wal_size = 16GB" >> $PGDATA/postgresql.conf
+echo "min_wal_size = 4GB" >> $PGDATA/postgresql.conf
+echo "effective_cache_size = 15GB" >> $PGDATA/postgresql.conf
+echo "default_statistics_target = 500" >> $PGDATA/postgresql.conf
+#echo "random_page_cost = 1.1" >> $PGDATA/postgresql.conf
+#echo "maintenance_work_mem = 2GB" >> $PGDATA/postgresql.conf
+#echo "max_worker_processes = 8" >> $PGDATA/postgresql.conf
+#echo "max_parallel_workers_per_gather = 8" >> $PGDATA/postgresql.conf
+#echo "max_parallel_maintenance_workers = 8" >> $PGDATA/postgresql.conf
+#echo "max_parallel_workers = 8" >> $PGDATA/postgresql.conf
+echo "autovacuum = 'off'" >> $PGDATA/postgresql.conf
+# AQO preferences
+echo "shared_preload_libraries = 'aqo, pg_stat_statements'" >> $PGDATA/postgresql.conf
+echo "aqo.mode = 'disabled'" >> $PGDATA/postgresql.conf
+#echo "aqo.join_threshold = 8" >> $PGDATA/postgresql.conf
+echo "aqo.join_threshold = 0" >> $PGDATA/postgresql.conf
+echo "aqo.force_collect_stat = 'off'" >> $PGDATA/postgresql.conf
+echo "aqo.fs_max_items = 10000" >> $PGDATA/postgresql.conf
+echo "aqo.fss_max_items = 20000" >> $PGDATA/postgresql.conf

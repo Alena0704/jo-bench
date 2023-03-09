@@ -1,0 +1,35 @@
+INSTDIR=/home/alena/postgrespro37_job/tmp_install/bin #/home/alena/postgrespro20/tmp_install/bin
+QUERY_DIR=/home/alena/job_analyze
+QUERY_DIR_TEST=/home/alena/job_analyze/queries
+QUERY_DIR_TEST_TEMP=/home/alena/job_analyze/sr_plan_test/queries_temp
+
+export PGDATA=/home/alena/postgres_data_job1
+
+iter=1
+folder_output=$QUERY_DIR/sr_plan_invalidate
+rm -rf $folder_output
+mkdir $folder_output
+for (( i=1; i<6; i++ ))
+do
+  file_output=$(echo "${folder_output}/${i}_report.csv")
+  echo -e "Query Number,Query Name,Execution Time,Plan time,Query hash" > $file_output
+  for file in $QUERY_DIR_TEST/*.sql
+  do
+    short_file=$(basename "$file")
+    echo -n "EXPLAIN (ANALYZE, VERBOSE, FORMAT JSON) " > test.sql
+    cat $file >> test.sql
+    result=$($INSTDIR/psql -d alena -f test.sql)
+    #result=$($INSTDIR/psql -d alena -f $file)
+    cat $file >> $folder_output/explains.txt
+    echo -e $result >> $folder_output/explains.txt
+    query_hash=$(echo $result | grep -Eo '"Query Identifier": [+-]?[0-9]*' | grep -Eo '[+-]?[0-9]*')
+    exec_time=$(echo $result | sed -n 's/.*"Execution Time": \([0-9]*\.[0-9]*\).*/\1/p')
+    plan_time=$(echo $result | sed -n 's/.*"Planning Time": \([0-9]*\.[0-9]*\).*/\1/p')
+    echo -e "$iter,$short_file,$exec_time,$plan_time,$query_hash" >> $file_output
+    echo -e "$iter,$short_file,$exec_time,$plan_time,$query_hash"
+    #echo -e "$iter,$short_file,$query_hash"
+  done
+iter=$((iter+1))
+$INSTDIR/psql -d alena -c  "SELECT sr_reload_frozen_plancache()"
+done
+$INSTDIR/psql -c "\copy (SELECT * FROM sr_plan_storage) to '${folder_output}/sr_plan_storage.csv' DELIMITER ',' CSV HEADER"

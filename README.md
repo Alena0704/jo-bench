@@ -39,7 +39,7 @@ files for run JOB test:
     setup_learn_settings.sh
     setup_forced_settings.sh
 
-files for analyzing:
+files for aqo analyze:
     script_anayze.py contains script for automatic built necessary graphs (in process)
     functions.py contains necessary functions for calculated datasets
     preprocess_dataframe.py contains preprocessing sourced datasets from given csv files in the more respectable view
@@ -47,5 +47,14 @@ files for analyzing:
 If you want to use python scripts you should install libraries:
     pandas, numpy, plotly, re, os, glob, argparse, math.
     Sorry, more information will be presented lately.
+
+files for sr_plan testing:
+    job_create - is the same file as previous jo-create, only used for sr_plan testing.
+    job-sr_plan - contains scripts with two stages: registrate and freeze queries before measuring time planning and executes query.
+    job-sr_plan_invalidate - invalidate or replaning plans for queries with extra stages.
+    regitser_template - it is the different way for testing sr_plan: we try to register query template and freeze it by it's identifiers.
+    job-sr_plan_after_registrated - script for testing sr_plan after having registrated its templates.
+    test1.sql - prepared sql scripts for registrated query templates.
+
 
 

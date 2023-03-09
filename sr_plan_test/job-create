@@ -1,0 +1,52 @@
+INSTDIR=/home/alena/postgrespro37_job/tmp_install/bin #/home/alena/postgrespro20/tmp_install/bin
+QUERY_DIR=/home/alena/job_analyze/sr_plan_test
+QUERY_DIR_TEST=/home/alena/job_analyze/sr_plan_test/queries
+# Set PG environment variables for correct access to the DBMS
+ export PGDATA=/home/alena/postgres_data_job1
+ export PGPORT=5432
+ export PGUSER=`whoami`
+
+rm -rf $PGDATA
+mkdir $PGDATA
+#define environment
+#export LD_LIBRARY_PATH=$INSTDIR/lib:$LD_LIBRARY_PATH
+
+# Stop instances and clean logs.
+$INSTDIR/pg_ctl -D $PGDATA stop
+$INSTDIR/initdb -D $PGDATA
+sleep 1
+rm -rf logfile.log
+
+# Kill all processes
+unamestr=`uname`
+if [[ "$unamestr" == 'Linux' ]]; then
+    pkill -U `whoami` -9 -e postgres
+	pkill -U `whoami` -9 -e pgbench
+	pkill -U `whoami` -9 -e psql
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    killall -u `whoami` -vz -9 postgres
+    killall -u `whoami` -vz -9 pgbench
+    killall -u `whoami` -vz -9 psql
+else
+    echo "Unintended OS."
+fi
+sleep 1
+
+$INSTDIR/pg_ctl -D $PGDATA -l logfile start
+echo "listen_addresses = '*'" >> $PGDATA/postgresql.conf
+echo "shared_preload_libraries = 'sr_plan'" >> $PGDATA/postgresql.conf
+#echo "session_preload_libraries = 'auto_explain'" >> $PGDATA/postgresql.conf
+$INSTDIR/pg_ctl -D $PGDATA -l logfile restart
+
+$INSTDIR/psql postgres -c "create database alena"
+
+$INSTDIR/psql -d alena -f $QUERY_DIR/schema.sql
+$INSTDIR/psql -d alena -f $QUERY_DIR/fkindexes.sql
+$INSTDIR/psql -d alena -vdatadir="'${QUERY_DIR}'" -f $QUERY_DIR/copy.sql
+
+# Set parameters
+# NB! Consider to use fsync = 'off'
+#psql -c "ALTER SYSTEM SET max_parallel_workers_per_gather = 0" # Just stabilize results
+
+$INSTDIR/pg_ctl -w -D $PGDATA -l logfile restart
+$INSTDIR/psql -c "VACUUM ANALYZE" # Be firmly confident about a table statistics

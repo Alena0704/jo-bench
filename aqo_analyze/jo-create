@@ -1,6 +1,6 @@
 INSTDIR=/home/alena/postgrespro20/tmp_install/bin
-QUERY_DIR=/home/alena/Yandex.Disk/aqo/test/jo-bench
-QUERY_DIR_TEST=/home/alena/Yandex.Disk/aqo/test/jo-bench/queries
+QUERY_DIR=/home/alena/job_analyze1/source
+QUERY_DIR_TEST=/home/alena/job_analyze1/source/queries
 
 # Set PG environment variables for correct access to the DBMS
  export PGDATA=/home/alena/postgres_data_job

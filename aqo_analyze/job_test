@@ -41,7 +41,7 @@ $INSTDIR/psql -c "
 
 filenum=1
 mode='disabled'
-folder_output=$(echo "${mode}_folder${iter_job}")
+folder_output=$(echo "/media/alena/ext_space/${mode}_folder${iter_job}")
 rm -r $folder_output
 mkdir $folder_output
 cp $QUERY_DIR/setup_disabled_settings.sh $folder_output/setup_disabled_settings.sh
@@ -98,7 +98,7 @@ $INSTDIR/psql -c "
 "
 filenum=1
 mode='learn'
-folder_output=$(echo "${mode}_folder${iter_job}")
+folder_output=$(echo "/media/alena/ext_space/${mode}_folder${iter_job}")
 rm -r $folder_output
 mkdir $folder_output
 cp $QUERY_DIR/setup_learn_settings.sh $folder_output/setup_learn_settings.sh
@@ -158,7 +158,7 @@ $INSTDIR/psql -c "
 "
 filenum=1
 mode='frozen'
-folder_output=$(echo "${mode}_folder${iter_job}")
+folder_output=$(echo "/media/alena/ext_space/${mode}_folder${iter_job}")
 rm -r $folder_output
 mkdir $folder_output
 cp $QUERY_DIR/setup_frozen_settings.sh $folder_output/setup_frozen_settings.sh

@@ -1,7 +1,7 @@
 INSTDIR=/home/alena/postgrespro37_job/tmp_install/bin #/home/alena/postgrespro20/tmp_install/bin
-QUERY_DIR=/home/alena/job_analyze
-QUERY_DIR_TEST=/home/alena/job_analyze/queries
-QUERY_DIR_TEST_TEMP=/home/alena/job_analyze/sr_plan_test/queries_temp
+QUERY_DIR=/home/alena/job_analyze1/source
+QUERY_DIR_TEST=/home/alena/job_analyze1/source/queries
+QUERY_DIR_TEST_TEMP=/home/alena/job_analyze1/source/sr_plan_test/queries_temp
 
 export PGDATA=/home/alena/postgres_data_job1
 folder_output=$QUERY_DIR/sr_plan

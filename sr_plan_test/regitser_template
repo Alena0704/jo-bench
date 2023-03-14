@@ -1,7 +1,7 @@
 INSTDIR=/home/alena/postgrespro37_job/tmp_install/bin #/home/alena/postgrespro20/tmp_install/bin
 QUERY_DIR=/home/alena/job_analyze1/source
 QUERY_DIR_TEST=/home/alena/job_analyze1/source/queries
-QUERY_DIR_TEST_TEMP=/home/alena/job_analyze1/source/sr_plan_test/queries_temp
+QUERY_DIR_TEST_TEMP=/home/alena/job_analyze1/sr_plan_test/queries_temp
 
 export PGDATA=/home/alena/postgres_data_job1
 
@@ -21,12 +21,13 @@ do
   short_file=$(basename "$file")
   echo -n "select sr_id from sr_register_query('" > test1.sql
   cat $file >> test1.sql
-  echo -n "');" >> test1.sql
+  echo "') \gset" >> test1.sql
+  echo -n "">> test1.sql
+  cat $QUERY_DIR_TEST/$short_file >> test1.sql
+  echo -n "select sr_plan_freeze(:sr_id);">> test1.sql
   result=$($INSTDIR/psql -d alena -f test1.sql)
-  sr_id=$(echo $result | grep -Eo 'sr_id ------- [0-9]*' | tr -d -c 0-9)
   #sql_txt=$(cat $file)
   #result=$($INSTDIR/psql -d alena -c "select srid from sr_plan_storage() where query_string='${sql_txt}'")
   #sr_id=$(echo $result | tr -d -c 0-9)
   #echo $sr_id
-  $INSTDIR/psql -d alena -c "SELECT sr_plan_freeze(${sr_id})"
 done

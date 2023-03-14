@@ -12,19 +12,19 @@ DECLARE
 	full_path text;
 	i integer;
 BEGIN
-	
+
 	IF (parts = 1)
 	THEN
-		full_path = path || '/csv/' || tblname || '.csv';
+		full_path = '/home/alena/job_analyze1/source' || '/csv/' || tblname || '.csv';
 		raise NOTICE 'COPY % .', full_path;
-		EXECUTE format('COPY %I FROM ''%s'' WITH (FORMAT csv, NULL '''', DELIMITER '','', QUOTE ''"'', ESCAPE ''\'', ENCODING ''WIN1251'');', tblname, full_path);
+		EXECUTE format('COPY %I FROM ''%s'' WITH (FORMAT csv, NULL '''', DELIMITER '','', QUOTE ''"'', ESCAPE ''\'');', tblname, full_path);
 		-- '
 	ELSE
 		FOR i IN 1..parts
 		LOOP
-			full_path = path || '/csv/' || tblname || '/' || tblname || '_' || i || '.csv';
+			full_path = '/home/alena/job_analyze1/source' || '/csv/' || tblname || '/' || tblname || '_' || i || '.csv';
 			raise NOTICE 'COPY % .', full_path;
-			EXECUTE format('COPY %I FROM ''%s'' WITH (FORMAT csv, NULL '''', DELIMITER '','', QUOTE ''"'', ESCAPE ''\'', ENCODING ''WIN1251'');', tblname, full_path);
+			EXECUTE format('COPY %I FROM ''%s'' WITH (FORMAT csv, NULL '''', DELIMITER '','', QUOTE ''"'', ESCAPE ''\'');', tblname, full_path);
 			-- '
 		END LOOP;
 	END IF;
@@ -63,7 +63,7 @@ BEGIN;
 	SELECT imdb_copy(:datadir, 'movie_link', 1);
 	TRUNCATE role_type;
 	SELECT imdb_copy(:datadir, 'role_type', 1);
-	
+
 	-- Copy large tables
 	TRUNCATE movie_info;
 	SELECT imdb_copy(:datadir, 'movie_info', 15);

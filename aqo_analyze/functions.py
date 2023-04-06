@@ -23,16 +23,20 @@ def get_dict(df, key_column, concat_column):
 
 def get_elements(elem):
     ln = len(elem)-1
-    if elem[ln]=='}':
-        elem = elem[:-1]
-    if elem[0] == '{':
-        elem = elem[1:]
-    return float(elem)
+    try:
+        if elem[ln]=='}':
+            elem = elem[:-1]
+        if elem[0] == '{':
+            elem = elem[1:]
+        return float(elem)
+    except:
+        return 0
 
 def preprocess(df, column_name, cut=1):
     df['{}'.format(column_name)] = df['{}'.format(column_name)].str[cut:-cut]
     df['{}'.format(column_name)] = df['{}'.format(column_name)].astype(str)
     df.insert(1, "{}_split".format('{}'.format(column_name)), '')
+    #print(column_name)
     for k,i in enumerate(df['{}'.format(column_name)]):
         df['{}_split'.format('{}'.format(column_name))].loc[k] = list(map(get_elements,i.split(',')))
     df = df.drop('{}'.format(column_name),axis = 1)
@@ -49,12 +53,12 @@ def sum_errors(df, column, mode):
     df[column] = lst
     return df
 
-def last_errors(df, column):
+def last_errors(df, column, new_column):
     lst = []
     for k,i in enumerate(df.itertuples(index=False)):
         a = np.array(df[column].loc[k])
         lst.append(a[-1])
-    df[column] = lst
+    df[new_column] = lst
     return df
 
 def del_column(df, column_name):
